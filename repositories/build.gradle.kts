@@ -3,6 +3,7 @@ plugins {
     id("java-library")
     alias(libs.plugins.org.jetbrains.kotlin.jvm)
     id("java-test-fixtures")
+    id("com.google.devtools.ksp")
 }
 
 java {
@@ -15,14 +16,17 @@ tasks.test {
 }
 
 dependencies {
-    implementation(libs.koin.core)
-    implementation(libs.kotlin.reflect)
-    implementation(libs.moshi)
-    implementation(libs.rxjava3)
-    implementation(libs.square.okhttp)
     implementation(project(":domainmodels"))
     implementation(project(":interfaces"))
+    implementation(libs.koin.core)
+    implementation(libs.moshi)
+    implementation(libs.moshi.adapters)
+    implementation(libs.rxjava3)
+    ksp(libs.moshi.codegen)
+    testImplementation(libs.bundles.junit5)
+    testImplementation(libs.kluent)
+    testImplementation(libs.mockk)
     testImplementation(libs.koin.test)
     testImplementation(project(":domainmodels"))
-    testImplementation(project(":interfaces"))
+    testImplementation(testFixtures(project(":interfaces")))
 }
