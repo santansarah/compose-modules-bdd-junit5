@@ -10,4 +10,8 @@ data class CityDTO(
     val state: String = "",
     val population: Int = 0,
     val county: String = ""
-)
+) {
+    companion object {
+        val EMPTY = emptyList<CityDTO>()
+    }
+}

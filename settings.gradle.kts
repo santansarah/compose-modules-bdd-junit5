@@ -17,3 +17,4 @@ rootProject.name = "Perry Demo"
 include(":app")
 include(":domainmodels")
 include(":interfaces")
+include(":networklogic")
