@@ -1,14 +1,13 @@
-package com.example.interfaces
+package com.santansarah.interfaces
 
-import com.santansarah.interfaces.ApiResponseCode
 import java.net.HttpURLConnection
 
-sealed class TravelAdvisoryApiError(val statusCode: Int? = null) : Throwable() {
-    object CountryNotFound : TravelAdvisoryApiError(
+sealed class CityApiError(val statusCode: Int? = null) : Throwable() {
+    object CityNotFound : CityApiError(
         HttpURLConnection.HTTP_NOT_FOUND
     )
 
-    object Forbidden : TravelAdvisoryApiError(
+    object Forbidden : CityApiError(
         HttpURLConnection.HTTP_FORBIDDEN
     )
 
@@ -20,19 +19,19 @@ sealed class TravelAdvisoryApiError(val statusCode: Int? = null) : Throwable() {
     // https://stackoverflow.com/questions/501277/
     data class CommonError(
         val apiResponseCode: ApiResponseCode,
-    ) : TravelAdvisoryApiError(apiResponseCode.statusCode)
+    ) : CityApiError(apiResponseCode.statusCode)
 
-    data class Other(val throwable: Throwable) : TravelAdvisoryApiError()
+    data class Other(val throwable: Throwable) : CityApiError()
 
     companion object {
-        private fun domainErrorFromStatusCode(statusCode: Int): TravelAdvisoryApiError? {
+        private fun domainErrorFromStatusCode(statusCode: Int): CityApiError? {
             // https://ivanmorgillo.com/2020/03/11/can-i-loop-over-a-kotlin-sealed-class/
-            return TravelAdvisoryApiError::class.sealedSubclasses
+            return CityApiError::class.sealedSubclasses
                 .firstOrNull { it.objectInstance?.statusCode == statusCode }
                 ?.objectInstance
         }
 
-        fun fromStatusCode(statusCode: Int): TravelAdvisoryApiError {
+        fun fromStatusCode(statusCode: Int): CityApiError {
             return domainErrorFromStatusCode(statusCode) ?: CommonError(
                 ApiResponseCode.fromStatusCode(statusCode)
             )

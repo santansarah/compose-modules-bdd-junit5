@@ -13,7 +13,7 @@ class CityDTOTests {
             .build()
     }
 
-    lateinit var cityDTO: CityDTO
+    private lateinit var cityDTO: CityDTO
 
     @BeforeEach
     fun setup() {
