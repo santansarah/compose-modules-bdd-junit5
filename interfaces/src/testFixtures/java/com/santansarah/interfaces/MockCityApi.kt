@@ -16,7 +16,7 @@ class MockCityApi : ICityApi {
         getCityListResult?.let {
             return it
         } ?: run {
-            return Observable.just<List<CityDTO>>(
+            return Observable.just(
                 listOf(
                     CityDTO(
                         zip = 45373,

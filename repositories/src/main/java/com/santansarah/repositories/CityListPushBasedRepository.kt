@@ -24,8 +24,6 @@ class CityListPushBasedRepository(private val cityApi: ICityApi) {
     private var _cities: BehaviorSubject<List<City>> = BehaviorSubject.createDefault(emptyList())
     val cities: Observable<List<City>> = _cities
 
-
-
     fun reload(): Completable {
         return cityApi.getCityList()
             .doOnNext {cityList ->
