@@ -47,7 +47,7 @@ fun CountryListPage(
                         ) {
                             Text(
                                 modifier = Modifier.padding(16.dp),
-                                text = it.city + ", " + it.state,
+                                text = it.city + ", " + it.state + " " + it.zip.toString(),
                                 style = MaterialTheme.typography.titleLarge
                             )
                         }
