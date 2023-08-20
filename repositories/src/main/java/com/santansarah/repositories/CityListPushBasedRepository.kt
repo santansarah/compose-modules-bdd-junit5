@@ -36,37 +36,17 @@ class CityListPushBasedRepository(private val cityApi: ICityApi) {
                 println("cities: $cityList")
 
                 this._cities.onNext(
-                    listOf(
+                    cityList.map { cityDTO ->
                         City(
-                            zip = 45373,
-                            lat = 40.03353,
-                            lng = -84.19588,
-                            city = "Troy",
-                            state = "OH",
-                            population = 35913,
-                            county = "Miami"
-                        ), City(
-                            zip = 12180,
-                            lat = 42.7516,
-                            lng = -73.59997,
-                            city = "Troy",
-                            state = "NY",
-                            population = 53181,
-                            county = "Rensselaer"
+                            city = cityDTO.city,
+                            zip = cityDTO.zip,
+                            lat = cityDTO.lat,
+                            lng = cityDTO.lng,
+                            state = cityDTO.state,
+                            population = cityDTO.population,
+                            county = cityDTO.county
                         )
-                    )
-
-//                    cityList.map { cityDTO ->
-//                        City(
-//                            city = cityDTO.city,
-//                            zip = cityDTO.zip,
-//                            lat = cityDTO.lat,
-//                            lng = cityDTO.lng,
-//                            state = cityDTO.state,
-//                            population = cityDTO.population,
-//                            county = cityDTO.county
-//                        )
-//                    }
+                    }
                 )
             }
             .ignoreElements()
