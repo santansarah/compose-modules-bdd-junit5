@@ -1,6 +1,7 @@
 package com.santansarah.domainmodels
-import com.santansarah.dtos.CityDTO
+import com.santansarah.dtos.CityApiResponseDTO
 import com.squareup.moshi.Moshi
+import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldNotBeNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -13,20 +14,20 @@ class CityDTOTests {
             .build()
     }
 
-    private lateinit var cityDTO: CityDTO
+    private lateinit var cityDTO: CityApiResponseDTO
 
     @BeforeEach
     fun setup() {
-        cityDTO = moshi.adapter(CityDTO::class.java)
+        cityDTO = moshi.adapter(CityApiResponseDTO::class.java)
             .fromJson(readJsonToString("city_dto.json"))!!
+
     }
 
     @Test
     fun `then it has parsed`() {
-        cityDTO.zip.shouldNotBeNull()
-        cityDTO.lat.shouldNotBeNull()
-        cityDTO.lng.shouldNotBeNull()
-        cityDTO.city.shouldNotBeNull()
+
+        cityDTO.cities.count().shouldBeEqualTo(5)
+        cityDTO.cities[0].zip.shouldNotBeNull()
     }
 }
 

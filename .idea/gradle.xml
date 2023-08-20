@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/domainmodels" />
+            <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/interfaces" />
             <option value="$PROJECT_DIR$/networklogic" />
             <option value="$PROJECT_DIR$/repositories" />

@@ -1,26 +1,25 @@
-import com.android.build.api.dsl.Packaging
-
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
 }
 
 android {
-    namespace = "com.santansarah.perrydemo"
-    compileSdk = 34
+    namespace = "com.santansarah.feature"
+    compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.santansarah.perrydemo"
         minSdk = 29
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+        consumerProguardFiles("consumer-rules.pro")
+    }
+
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.8"
     }
 
     buildTypes {
@@ -39,22 +38,6 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.8"
-    }
-    packaging {
-        resources.excludes.add("META-INF/LICENSE.txt")
-        resources.excludes.add("META-INF/NOTICE.txt")
-        resources.excludes.add("META-INF/LICENSE")
-        resources.excludes.add("META-INF/LICENSE.md")
-        resources.excludes.add("META-INF/LICENSE-notice.md")
-        resources.excludes.add("META-INF/DEPENDENCIES")
-        resources.excludes.add("META-INF/NOTICE")
-        resources.excludes.add("LICENSE.txt")
-    }
 }
 
 dependencies {
@@ -69,18 +52,20 @@ dependencies {
     implementation(libs.material3)
 
     androidTestImplementation(libs.bundles.junit5)
+    implementation(libs.material3)
+    implementation(libs.ui.tooling)
     implementation(libs.androidx.compose.runtime.rxjava3)
-    implementation(libs.androidx.lifecycle.viewmodel)
-    implementation(libs.androidx.startup.runtime)
     implementation(libs.koin.core)
     implementation(libs.koin.android)
+    implementation(libs.koin.android.compose)
     implementation(libs.rxjava3)
     implementation(libs.rxjava3.android)
     implementation(project(":domainmodels"))
     implementation(project(":viewmodels"))
-    implementation(project(":feature"))
-    implementation(project(":interfaces"))
-    implementation(project(":networklogic"))
     implementation(project(":repositories"))
-    implementation(libs.bundles.junit5)
+    testImplementation(libs.bundles.junit5)
+    testImplementation(libs.koin.test)
+    testImplementation(libs.kluent)
+    testImplementation(testFixtures(project(":interfaces")))
+
 }

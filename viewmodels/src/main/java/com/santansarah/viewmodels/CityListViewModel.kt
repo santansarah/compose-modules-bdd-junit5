@@ -27,17 +27,21 @@ class CityListViewModel(val repo: CityListPushBasedRepository) : ViewModel() {
 
     private fun onPageLoaded() {
         disposables.add(repo.cities.doOnNext {
+            println("filling cities...")
             _state.onNext(_state.value!!.copy(cities = it))
         }.subscribe())
 
         disposables.add(
             repo.reload()
                 .doOnSubscribe {
+                    println("isloading is true")
                     _state.onNext(_state.value!!.copy(isLoading = true))
                 }
                 .subscribe({
+                    println("cities loaded...")
                     _state.onNext(_state.value!!.copy(isLoading = false, isLoaded = true))
                 }, { error ->
+                    println("error: ${error.message}")
                     _state.onNext(_state.value!!.copy(
                         isLoading = false,
                         isLoaded = true,
