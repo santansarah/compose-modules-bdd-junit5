@@ -13,10 +13,12 @@ DRAFT * DRAFT * DRAFT
     * Observable - Very similar to Kotlin cold flow. Used for emitting streams of data over
       time whose state you want to track. Good for collections and lists. Will only emit when a
       observer is subscribed.
-    * Completable - This has no value; it only emits Completed or Error. Good for one-off things that
+    * Completable - This has no value; it only emits Completed or Error. Good for one-off things
+      that
       return no value & for setting state - like setting a favorite, liking something, etc.
     * Single - Emits one successful value or an error. This is good for pulling up detail
-      items, like a single ToDo item, or a City Result, etc. Similar to a StateFlow/MutableStateFlow.
+      items, like a single ToDo item, or a City Result, etc. Similar to a
+      StateFlow/MutableStateFlow.
 
    Each API call is set to start in the IO thread: `Schedulers.io()`. Calls are also deferred, which
    means that values aren't emitted until someone subscribes. This gives each subscriber their own
@@ -40,8 +42,11 @@ Let's go even deeper, and compare different RxJava patterns to Kotlin Flows.
 <table>
 <tr><td>Kotlin</td><td>RxJava</td></tr>
 <tr><td><b>Flow:</b> Emits asynchronous data stream, automatically uses coroutine scopes in the 
-background to flow or cancel with lifecycle: activity, view model, etc. or we can explicitly define the lifecycle scope, automatic backpressure
-support w/suspending coroutines, or we can add our own strategies with buffers, conflate, and collecting latest values, starts separately for
+background to flow or cancel with lifecycle: activity, view model, etc. or we can explicitly define
+the lifecycle scope, producer/consumer = sequential by default, so backpressure isn't an issue, but 
+we can add our own 
+strategies and launch separate coroutines with buffers, conflate, and collecting latest values, 
+flow starts separately for
 each collector, converts to hot flow w/statein + sharein</td>
 <td><b>Observable:</b> Emits asynchronous data stream, to handle backpressure use Flowable, 
 must control lifecycle w/Disposable, starts separately for
@@ -60,9 +65,9 @@ auto replay of 1</td>
 auto replay of 1</td></tr>
 </table>
 
-For RxJava **Single:** a flow of 1 item or an error, there is no direct relationship, but you could 
+For RxJava **Single:** a flow of 1 item or an error, there is no direct relationship, but you could
 easily create any type of flow that returns a wrapper Resource class (Success/Error), catch errors
-in your flow collection, etc. Single reminds me of StateFlow or mutableStateOf. 
+in your flow collection, etc. Single reminds me of StateFlow or mutableStateOf.
 
 The same goes for **Completable** - you could just return a sealed (Success/Error) class.
 
@@ -88,42 +93,46 @@ we need to manage the lifecycle ourselves with something like this:
 
 ```kotlin
 private fun onPageLoaded() {
-   disposables.add(repo.cities.doOnNext {
-      _state.onNext(_state.value!!.copy(cities = it))
-   }.subscribe())
+    disposables.add(repo.cities.doOnNext {
+        _state.onNext(_state.value!!.copy(cities = it))
+    }.subscribe())
 
-   disposables.add(
-      repo.reload()
-         .doOnSubscribe {
-            _state.onNext(_state.value!!.copy(isLoading = true))
-         }
-         .subscribe({
-            _state.onNext(_state.value!!.copy(isLoading = false, isLoaded = true))
-         }, { error ->
-            _state.onNext(_state.value!!.copy(
-               isLoading = false,
-               isLoaded = true,
-               error = (error as AppErrors)
-            ))
-         })
-   )
+    disposables.add(
+        repo.reload()
+            .doOnSubscribe {
+                _state.onNext(_state.value!!.copy(isLoading = true))
+            }
+            .subscribe({
+                _state.onNext(_state.value!!.copy(isLoading = false, isLoaded = true))
+            }, { error ->
+                _state.onNext(
+                    _state.value!!.copy(
+                        isLoading = false,
+                        isLoaded = true,
+                        error = (error as AppErrors)
+                    )
+                )
+            })
+    )
 }
 ```
 
-Let's break this down. First, we call our BehaviorSubject `cities` from the repo, update the ViewModel UI State, add this to a disposable, and subcribe to the flow.
+Let's break this down. First, we call our BehaviorSubject `cities` from the repo, update the
+ViewModel UI State, add this to a disposable, and subcribe to the flow.
 
-Next, our `reload` fun is Completable, but our list of cities is Observable. This is a little 
-confusing - but what we're doing here is from the repo, `reload` populates `cities`. While this is 
-happening, we want to update the UI State: first, we're loading, then when we `subscribe`, we push 
+Next, our `reload` fun is Completable, but our list of cities is Observable. This is a little
+confusing - but what we're doing here is from the repo, `reload` populates `cities`. While this is
+happening, we want to update the UI State: first, we're loading, then when we `subscribe`, we push
 the flow with `doOnNext` and then we're finished. Also, we want to track it in `disposables`.
 
-Now, when the ViewModel gets cleared, we can clean things up. Kotlin flows & coroutines do this for us automatically:
+Now, when the ViewModel gets cleared, we can clean things up. Kotlin flows & coroutines do this for
+us automatically:
 
 ```kotlin
 override fun onCleared() {
-   super.onCleared()
+    super.onCleared()
 
-   disposables.dispose()
+    disposables.dispose()
 }
 ```
 
